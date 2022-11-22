@@ -1,12 +1,18 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+///En ejeX van las categorias y en ejeY los valores para cada categoria
 class DonaGenerico extends StatefulWidget {
   final String titulo;
   final List lista;
-  const DonaGenerico({Key? key, 
+  final String unidad;
+  final String ejeX;
+  final MaterialColor? color;
+  const DonaGenerico({Key? key,
   required this.titulo,
   required this.lista,
+  required this.unidad, required this.ejeX, this.color,
   }) : super(key: key);
 
   @override
@@ -15,10 +21,17 @@ class DonaGenerico extends StatefulWidget {
 
 class _DonaGenericoState extends State<DonaGenerico> {
   late TooltipBehavior _tooltip;
+  late List<dynamic> items;
+
 
   @override
   void initState() {
-    _tooltip = TooltipBehavior(enable: true, format: 'point.x : point.y');
+    _tooltip = TooltipBehavior(enable: true, format: 'point.x : point.y${widget.unidad}');
+    items = widget.lista.map((e) => ItemsChart(
+      x: e.x, 
+      y: e.y, 
+      texto: e.texto, 
+      color: e.color ?? Colors.primaries[Random().nextInt(Colors.primaries.length)],)).toList();
     super.initState();
   }
   @override
@@ -42,7 +55,8 @@ class _DonaGenericoState extends State<DonaGenerico> {
           radius: '80%',
           explode: true,
           explodeOffset: '10%',
-          dataSource: widget.lista,
+          dataSource: items,
+          pointColorMapper: (dynamic data, _) => data.color,
           xValueMapper: (dynamic data, _) => data.x,
           yValueMapper: (dynamic data, _) => data.y,
           dataLabelMapper: (dynamic data, _) => data.texto,
@@ -51,3 +65,16 @@ class _DonaGenericoState extends State<DonaGenerico> {
   }
 }
 
+class ItemsChart {
+  final String x;
+  final num y;
+  final String texto;
+  final MaterialColor color;
+  const ItemsChart({Key? key,
+  required this.x,
+  required this.y,
+  required this.texto,
+  required this.color, 
+  });
+
+}
